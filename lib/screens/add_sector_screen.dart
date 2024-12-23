@@ -3,6 +3,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import '../components/shared/location_picker.dart';
+import 'dart:io';
+import '../components/shared/image_picker_section.dart';
 
 class AddSectorScreen extends StatefulWidget {
   const AddSectorScreen({super.key});
@@ -29,6 +31,7 @@ class _AddSectorScreenState extends State<AddSectorScreen> {
 
   LatLng? _selectedLocation;
   final MapController _mapController = MapController();
+  File? _sectorImage;
 
   @override
   void initState() {
@@ -291,6 +294,15 @@ class _AddSectorScreenState extends State<AddSectorScreen> {
                     ],
                   ),
                 ),
+              ),
+              const SizedBox(height: 16),
+              ImagePickerSection(
+                title: 'Sector Image',
+                onImageSelected: (File image) {
+                  setState(() {
+                    _sectorImage = image;
+                  });
+                },
               ),
               const SizedBox(height: 16),
               // Additional Details Card
