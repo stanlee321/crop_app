@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../screens/add_crop_screen.dart';
 import '../../screens/add_sector_screen.dart';
+import '../../screens/add_fertilizer_screen.dart';
+import '../../screens/add_pest_screen.dart';
 
 class QuickActionsSection extends StatelessWidget {
   const QuickActionsSection({super.key});
@@ -67,7 +69,14 @@ class QuickActionsSection extends StatelessWidget {
                     '💧 Add Fertilizer',
                     Icons.science,
                     Colors.orange,
-                    () {},
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AddFertilizerScreen(),
+                        ),
+                      );
+                    },
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -77,7 +86,14 @@ class QuickActionsSection extends StatelessWidget {
                     '🐛 Add Pest',
                     Icons.bug_report,
                     Colors.red,
-                    () {},
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AddPestScreen(),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],
