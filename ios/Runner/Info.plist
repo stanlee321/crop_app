@@ -22,6 +22,10 @@
 	<string>Camera permission is required for QR code scanning</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Microphone permission is required for QR code scanning</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs access to location when selecting sector location.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app needs access to location when selecting sector location.</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
