@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
+import '../components/shared/location_picker.dart';
 
 class AddCropScreen extends StatefulWidget {
   const AddCropScreen({super.key});
@@ -18,6 +20,7 @@ class _AddCropScreenState extends State<AddCropScreen> {
   String? _selectedSpecies;
   String? _selectedGrowthStage;
   DateTime? _plantDate;
+  LatLng? _selectedLocation;
 
   final List<String> _species = ['Tomato', 'Potato', 'Lettuce', 'Spinach'];
   final List<String> _growthStages = ['Seedling', 'Vegetative', 'Flowering', 'Harvest'];
@@ -60,146 +63,227 @@ class _AddCropScreenState extends State<AddCropScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Crop Name',
-                  border: OutlineInputBorder(),
+              // Basic Information Card
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Basic Information',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _nameController,
+                              decoration: const InputDecoration(
+                                labelText: 'Crop Name',
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Required';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: DropdownButtonFormField<String>(
+                              value: _selectedSpecies,
+                              decoration: const InputDecoration(
+                                labelText: 'Species',
+                                border: OutlineInputBorder(),
+                              ),
+                              items: _species.map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedSpecies = newValue;
+                                });
+                              },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Required';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _varietyController,
+                              decoration: const InputDecoration(
+                                labelText: 'Variety',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: DropdownButtonFormField<String>(
+                              value: _selectedGrowthStage,
+                              decoration: const InputDecoration(
+                                labelText: 'Growth Stage',
+                                border: OutlineInputBorder(),
+                              ),
+                              items: _growthStages.map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedGrowthStage = newValue;
+                                });
+                              },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Required';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a crop name';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: _selectedSpecies,
-                decoration: const InputDecoration(
-                  labelText: 'Species',
-                  border: OutlineInputBorder(),
-                ),
-                items: _species.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedSpecies = newValue;
-                  });
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please select a species';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _varietyController,
-                decoration: const InputDecoration(
-                  labelText: 'Variety',
-                  border: OutlineInputBorder(),
+              // Location Card
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Location',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      LocationPicker(
+                        initialLocation: _selectedLocation,
+                        onLocationSelected: (location) {
+                          setState(() {
+                            _selectedLocation = location;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: _selectedGrowthStage,
-                decoration: const InputDecoration(
-                  labelText: 'Growth Stage',
-                  border: OutlineInputBorder(),
-                ),
-                items: _growthStages.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedGrowthStage = newValue;
-                  });
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please select a growth stage';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _locationController,
-                decoration: const InputDecoration(
-                  labelText: 'Location',
-                  border: OutlineInputBorder(),
+              // Additional Details Card
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Additional Details',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      InkWell(
+                        onTap: () => _selectDate(context),
+                        child: InputDecorator(
+                          decoration: const InputDecoration(
+                            labelText: 'Plant Date',
+                            border: OutlineInputBorder(),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                _plantDate == null
+                                    ? 'Select a date'
+                                    : '${_plantDate!.day}/${_plantDate!.month}/${_plantDate!.year}',
+                              ),
+                              const Icon(Icons.calendar_today),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _yieldController,
+                        decoration: const InputDecoration(
+                          labelText: 'Expected Yield (kg)',
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.number,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _commentsController,
+                        decoration: const InputDecoration(
+                          labelText: 'Comments',
+                          border: OutlineInputBorder(),
+                        ),
+                        maxLines: 3,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
-                'Additional Details',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              ListTile(
-                title: const Text('Plant Date'),
-                subtitle: Text(
-                  _plantDate == null
-                      ? 'Select a date'
-                      : '${_plantDate!.day}/${_plantDate!.month}/${_plantDate!.year}',
-                ),
-                trailing: const Icon(Icons.calendar_today),
-                onTap: () => _selectDate(context),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _yieldController,
-                decoration: const InputDecoration(
-                  labelText: 'Expected Yield (kg)',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _commentsController,
-                decoration: const InputDecoration(
-                  labelText: 'Comments',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
-              ),
-              const SizedBox(height: 24),
+              // Action Buttons
               Row(
                 children: [
                   Expanded(
-                    child: ElevatedButton(
+                    child: ElevatedButton.icon(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           // Save crop logic here
                           Navigator.pop(context);
                         }
                       },
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        child: Text('Save Crop'),
+                      icon: const Icon(Icons.save),
+                      label: const Text('Save Crop'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: OutlinedButton(
+                    child: OutlinedButton.icon(
                       onPressed: () => Navigator.pop(context),
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        child: Text('Cancel'),
+                      icon: const Icon(Icons.cancel),
+                      label: const Text('Cancel'),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
                   ),

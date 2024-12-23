@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import '../components/shared/location_picker.dart';
 
 class AddSectorScreen extends StatefulWidget {
   const AddSectorScreen({super.key});
@@ -121,47 +122,6 @@ class _AddSectorScreenState extends State<AddSectorScreen> {
     );
   }
 
-  Widget _buildLocationField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Location',
-          style: TextStyle(fontSize: 16),
-        ),
-        const SizedBox(height: 8),
-        InkWell(
-          onTap: _showMapDialog,
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    _selectedLocation != null
-                        ? 'Lat: ${_selectedLocation!.latitude.toStringAsFixed(4)}, '
-                            'Lng: ${_selectedLocation!.longitude.toStringAsFixed(4)}'
-                        : 'Select location on map',
-                    style: TextStyle(
-                      color: _selectedLocation != null
-                          ? Colors.black
-                          : Colors.grey[600],
-                    ),
-                  ),
-                ),
-                const Icon(Icons.map),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   @override
   void dispose() {
     _nameController.dispose();
@@ -186,157 +146,243 @@ class _AddSectorScreenState extends State<AddSectorScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Sector Name',
-                  border: OutlineInputBorder(),
+              // Basic Information Card
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Basic Information',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _nameController,
+                              decoration: const InputDecoration(
+                                labelText: 'Sector Name',
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Required';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _areaSizeController,
+                              decoration: const InputDecoration(
+                                labelText: 'Area Size (m²)',
+                                border: OutlineInputBorder(),
+                              ),
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Required';
+                                }
+                                if (double.tryParse(value) == null || double.parse(value) <= 0) {
+                                  return 'Invalid number';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: DropdownButtonFormField<String>(
+                              value: _selectedCropType,
+                              decoration: const InputDecoration(
+                                labelText: 'Crop Type',
+                                border: OutlineInputBorder(),
+                              ),
+                              items: _cropTypes.map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedCropType = newValue;
+                                });
+                              },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Required';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: DropdownButtonFormField<String>(
+                              value: _selectedStatus,
+                              decoration: const InputDecoration(
+                                labelText: 'Status',
+                                border: OutlineInputBorder(),
+                              ),
+                              items: _statusOptions.map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedStatus = newValue;
+                                });
+                              },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Required';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a sector name';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: _selectedCropType,
-                decoration: const InputDecoration(
-                  labelText: 'Crop Type',
-                  border: OutlineInputBorder(),
+              // Location Card
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Location',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      LocationPicker(
+                        initialLocation: _selectedLocation,
+                        onLocationSelected: (location) {
+                          setState(() {
+                            _selectedLocation = location;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-                items: _cropTypes.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedCropType = newValue;
-                  });
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please select a crop type';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _areaSizeController,
-                decoration: const InputDecoration(
-                  labelText: 'Area Size (m²)',
-                  border: OutlineInputBorder(),
+              // Additional Details Card
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Additional Details',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _soilTypeController,
+                              decoration: const InputDecoration(
+                                labelText: 'Soil Type',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: DropdownButtonFormField<String>(
+                              value: _selectedIrrigation,
+                              decoration: const InputDecoration(
+                                labelText: 'Irrigation',
+                                border: OutlineInputBorder(),
+                              ),
+                              items: _irrigationTypes.map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedIrrigation = newValue;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _commentsController,
+                        decoration: const InputDecoration(
+                          labelText: 'Comments',
+                          border: OutlineInputBorder(),
+                        ),
+                        maxLines: 3,
+                      ),
+                    ],
+                  ),
                 ),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter area size';
-                  }
-                  if (double.tryParse(value) == null || double.parse(value) <= 0) {
-                    return 'Please enter a valid positive number';
-                  }
-                  return null;
-                },
               ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: _selectedStatus,
-                decoration: const InputDecoration(
-                  labelText: 'Status',
-                  border: OutlineInputBorder(),
-                ),
-                items: _statusOptions.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedStatus = newValue;
-                  });
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please select a status';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              _buildLocationField(),
               const SizedBox(height: 24),
-              const Text(
-                'Additional Details',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _soilTypeController,
-                decoration: const InputDecoration(
-                  labelText: 'Soil Type',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: _selectedIrrigation,
-                decoration: const InputDecoration(
-                  labelText: 'Irrigation',
-                  border: OutlineInputBorder(),
-                ),
-                items: _irrigationTypes.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedIrrigation = newValue;
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _commentsController,
-                decoration: const InputDecoration(
-                  labelText: 'Comments',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
-              ),
-              const SizedBox(height: 24),
+              // Action Buttons
               Row(
                 children: [
                   Expanded(
-                    child: ElevatedButton(
+                    child: ElevatedButton.icon(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           // Save sector logic here
                           Navigator.pop(context);
                         }
                       },
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        child: Text('Save Sector'),
+                      icon: const Icon(Icons.save),
+                      label: const Text('Save Sector'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: OutlinedButton(
+                    child: OutlinedButton.icon(
                       onPressed: () => Navigator.pop(context),
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        child: Text('Cancel'),
+                      icon: const Icon(Icons.cancel),
+                      label: const Text('Cancel'),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
                   ),
