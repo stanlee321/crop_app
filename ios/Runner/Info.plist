@@ -36,6 +36,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera permission is required for QR code scanning.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs photos access to select crop images</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import '../components/shared/location_picker.dart';
+import 'dart:io';
+import '../components/shared/image_picker_section.dart';
 
 class AddCropScreen extends StatefulWidget {
   const AddCropScreen({super.key});
@@ -21,6 +23,7 @@ class _AddCropScreenState extends State<AddCropScreen> {
   String? _selectedGrowthStage;
   DateTime? _plantDate;
   LatLng? _selectedLocation;
+  File? _cropImage;
 
   final List<String> _species = ['Tomato', 'Potato', 'Lettuce', 'Spinach'];
   final List<String> _growthStages = ['Seedling', 'Vegetative', 'Flowering', 'Harvest'];
@@ -198,6 +201,15 @@ class _AddCropScreenState extends State<AddCropScreen> {
                     ],
                   ),
                 ),
+              ),
+              const SizedBox(height: 16),
+              ImagePickerSection(
+                title: 'Crop Image',
+                onImageSelected: (File image) {
+                  setState(() {
+                    _cropImage = image;
+                  });
+                },
               ),
               const SizedBox(height: 16),
               // Additional Details Card
