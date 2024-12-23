@@ -28,7 +28,7 @@ class QuickActionsSection extends StatelessWidget {
                 Expanded(
                   child: _buildActionButton(
                     context,
-                    '🆕 Add New Crop',
+                    'Add New Crop',
                     Icons.add_circle,
                     Colors.green,
                     () {
@@ -45,7 +45,7 @@ class QuickActionsSection extends StatelessWidget {
                 Expanded(
                   child: _buildActionButton(
                     context,
-                    '🌾 Add Sector',
+                    'Add Sector',
                     Icons.grid_view,
                     Colors.blue,
                     () {
@@ -66,7 +66,7 @@ class QuickActionsSection extends StatelessWidget {
                 Expanded(
                   child: _buildActionButton(
                     context,
-                    '💧 Add Fertilizer',
+                    'Add Fertilizer',
                     Icons.science,
                     Colors.orange,
                     () {
@@ -83,7 +83,7 @@ class QuickActionsSection extends StatelessWidget {
                 Expanded(
                   child: _buildActionButton(
                     context,
-                    '🐛 Add Pest',
+                    'Add Pest',
                     Icons.bug_report,
                     Colors.red,
                     () {
